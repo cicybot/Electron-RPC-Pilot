@@ -1,0 +1,5 @@
+{
+  "name": "Electron RPC Pilot",
+  "description": "An Electron-based browser automation server that exposes a JSON-RPC HTTP interface for controlling browser windows, managing isolated sessions, and executing remote scripts.",
+  "requestFramePermissions": []
+}

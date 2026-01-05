@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electron RPC Pilot</title>
+    <style>
+        :root {
+            --bg-root: #121212;
+            --bg-card: #1e1e1e;
+            --bg-hover: #2c2c2c;
+            --border: #333333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --code-bg: #0d0d0d;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-root);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #root { height: 100%; }
+
+        /* Utilities */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .p-4 { padding: 1rem; }
+        .p-2 { padding: 0.5rem; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .font-mono { font-family: 'Menlo', 'Monaco', 'Courier New', monospace; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+        .font-bold { font-weight: bold; }
+        .text-secondary { color: var(--text-secondary); }
+
+        /* UI Components */
+        .btn {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .btn:hover { background-color: var(--bg-hover); border-color: var(--text-secondary); }
+        .btn-primary { background-color: var(--accent); border-color: var(--accent); color: white; }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-icon { padding: 0.5rem; display: flex; align-items: center; justify-content: center; }
+
+        .input {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 4px;
+            outline: none;
+        }
+        .input:focus { border-color: var(--accent); }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .scroll-y { overflow-y: auto; }
+
+        /* Specifics */
+        .sidebar { width: 250px; border-right: 1px solid var(--border); }
+        .main-content { flex: 1; overflow: hidden; }
+        
+        .grid-accounts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .code-editor {
+            font-family: monospace;
+            background-color: var(--code-bg);
+            color: #d4d4d4;
+            border: 1px solid var(--border);
+            width: 100%;
+            min-height: 150px;
+            padding: 0.5rem;
+            resize: vertical;
+        }
+
+        .preview-img {
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: #000;
+        }
+        
+        .badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-hover);
+            font-size: 0.75rem;
+            border: 1px solid var(--border);
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+</body>
+</html>
