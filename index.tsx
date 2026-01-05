@@ -63,12 +63,31 @@ const IconCamera = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 );
 
+const WindowThumbnail = ({ id, url, refreshKey, onClick }: { id: number, url: string, refreshKey: number, onClick: () => void }) => {
+    const hostname = new URL(url).hostname;
+    const screenshotUrl = (RPC_URL.startsWith('http') ? new URL('/screenshot', RPC_URL).origin + '/screenshot' : '/screenshot') + `?id=${id}&t=${refreshKey}`;
+
+    return (
+        <div className="window-thumb" onClick={onClick} title={`Open ${url}`}>
+            <img src={screenshotUrl} alt={hostname} loading="lazy" />
+            <div className="window-thumb-overlay">
+                <div className="window-thumb-title">{hostname}</div>
+                <div className="window-thumb-subtitle">
+                    <span>{url.length > 30 ? '...' + url.slice(-25) : url}</span>
+                    <span className="badge font-mono" style={{fontSize: '0.6rem'}}>#{id}</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const App = () => {
   const [view, setView] = useState<'dashboard' | 'detail'>('dashboard');
   const [selectedWindow, setSelectedWindow] = useState<{id: number, url: string} | null>(null);
 
   // Dashboard State
   const [windows, setWindows] = useState<WindowMap>({});
+  const [refreshTick, setRefreshTick] = useState(Date.now());
   
   // Create Window State
   const [newUrl, setNewUrl] = useState('https://google.com');
@@ -79,6 +98,7 @@ const App = () => {
     try {
       const data = await rpc<WindowMap>('getWindows');
       setWindows(data || {});
+      setRefreshTick(Date.now()); // Update tick to refresh thumbnails
     } catch (e) {
       console.error(e);
     }
@@ -118,7 +138,7 @@ const App = () => {
       <header className="flex items-center justify-between p-4" style={{borderBottom: '1px solid var(--border)', background: 'var(--bg-card)'}}>
         <div className="flex items-center gap-2">
             <h1 className="font-bold text-lg">Electron RPC Pilot</h1>
-            <span className="badge text-secondary">v1.0</span>
+            <span className="badge text-secondary">v1.1</span>
         </div>
         <div>
             {/* Global Actions can go here */}
@@ -162,27 +182,22 @@ const App = () => {
             {Object.keys(windows).length === 0 ? (
                 <div className="text-secondary text-center p-8">No active windows found. Launch one above!</div>
             ) : (
-                <div className="grid-accounts">
+                <div className="flex flex-col gap-6">
                     {Object.entries(windows).map(([accIdx, sites]) => (
                         <div key={accIdx} className="card flex flex-col">
                             <div className="p-3 border-b border-border bg-hover flex justify-between items-center" style={{background: 'var(--bg-hover)'}}>
                                 <span className="font-mono font-bold text-sm">Account #{accIdx}</span>
-                                <span className="badge">{Object.keys(sites).length} Tabs</span>
+                                <span className="badge">{Object.keys(sites).length} Sessions</span>
                             </div>
-                            <div className="p-2 flex flex-col gap-2">
+                            <div className="window-thumbs-grid">
                                 {Object.entries(sites).map(([url, info]) => (
-                                    <div 
+                                    <WindowThumbnail 
                                         key={info.id} 
-                                        onClick={() => handleSelectWindow(info.id, url)}
-                                        className="btn flex justify-between items-center text-left"
-                                        style={{justifyContent: 'space-between'}}
-                                    >
-                                        <div className="flex flex-col overflow-hidden" style={{maxWidth: '80%'}}>
-                                            <span className="text-sm font-bold truncate">{new URL(url).hostname}</span>
-                                            <span className="text-xs text-secondary truncate">{url}</span>
-                                        </div>
-                                        <span className="badge font-mono">ID:{info.id}</span>
-                                    </div>
+                                        id={info.id} 
+                                        url={url} 
+                                        refreshKey={refreshTick}
+                                        onClick={() => handleSelectWindow(info.id, url)} 
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -209,7 +224,8 @@ const WindowDetail = ({ windowId, initialUrl, onBack }: { windowId: number, init
     const [currentUrl, setCurrentUrl] = useState(initialUrl);
     const [navUrl, setNavUrl] = useState(initialUrl);
     const [screenshotTs, setScreenshotTs] = useState(Date.now());
-    const [jsCode, setJsCode] = useState(`return document.title;`);
+    // Using IIFE to ensure return statements work correctly in executeJavaScript
+    const [jsCode, setJsCode] = useState(`(() => { return document.title; })()`);
     const [evalResult, setEvalResult] = useState<string>('');
     const [isAutoRefresh, setIsAutoRefresh] = useState(false);
 

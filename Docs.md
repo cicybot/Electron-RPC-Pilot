@@ -92,3 +92,18 @@ When using `importCookies`, the cookie objects should adhere to the Electron `Co
 - `sameSite` ("no_restriction" | "lax" | "strict")
 
 *Note: The system automatically handles strict prefix rules for `__Secure-` and `__Host-` cookies.*
+
+## Feature Details
+
+### 4. Remote Execution
+- **Execute JavaScript:** Run arbitrary JavaScript code within the context of any open window and retrieve the result immediately.
+  > **Tip:** The `code` provided is executed in the global context. Top-level `return` statements are not valid and will cause errors. To return values from complex logic, wrap your code in an IIFE (Immediately Invoked Function Expression).
+  >
+  > **Incorrect:** `return document.title;`
+  >
+  > **Correct:** `(() => { return document.title; })()`
+- **DOM Interaction:** Wait for DOM ready events and interact with page elements via injected scripts.
+
+### 5. System Introspection
+- **Resource Monitoring:** Retrieve system memory usage, CPU usage, and process details.
+- **Screen Metrics:** Get primary display dimensions for responsive testing.
